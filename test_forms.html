@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Forms - Smart Account Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-container h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .test-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .add-form-btn {
+            background: #4CAF50;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-info">
+        <h1>🧪 Test Forms voor Smart Account Manager</h1>
+        <p>Deze pagina bevat verschillende formulieren om de extensie te testen:</p>
+        <ul>
+            <li><strong>Scan Pagina</strong> - Test de scan functionaliteit</li>
+            <li><strong>Auto-detectie</strong> - Formulieren worden automatisch gedetecteerd</li>
+            <li><strong>Natural Language</strong> - Probeer commando's zoals "Vul mijn gegevens in"</li>
+        </ul>
+        <button class="add-form-btn" onclick="addLoginForm()">+ Voeg Login Form Toe</button>
+        <button class="add-form-btn" onclick="addRegistrationForm()">+ Voeg Registratie Form Toe</button>
+        <button class="add-form-btn" onclick="addContactForm()">+ Voeg Contact Form Toe</button>
+    </div>
+
+    <!-- Login Form -->
+    <div class="form-container">
+        <h2>🔐 Login Formulier</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-mailadres:</label>
+                <input type="email" id="email" name="email" placeholder="je@email.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Wachtwoord:</label>
+                <input type="password" id="password" name="password" placeholder="Voer je wachtwoord in">
+            </div>
+            <button type="submit">Inloggen</button>
+        </form>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-container">
+        <h2>📝 Registratie Formulier</h2>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="firstName">Voornaam:</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Je voornaam">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Achternaam:</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Je achternaam">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">E-mailadres:</label>
+                <input type="email" id="regEmail" name="email" placeholder="je@email.com">
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefoonnummer:</label>
+                <input type="tel" id="phone" name="phone" placeholder="+31 6 12345678">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Wachtwoord:</label>
+                <input type="password" id="regPassword" name="password" placeholder="Kies een sterk wachtwoord">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Bevestig Wachtwoord:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Herhaal je wachtwoord">
+            </div>
+            <button type="submit">Account Aanmaken</button>
+        </form>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="form-container">
+        <h2>📞 Contact Formulier</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="contactName">Naam:</label>
+                <input type="text" id="contactName" name="name" placeholder="Je volledige naam">
+            </div>
+            <div class="form-group">
+                <label for="contactEmail">E-mailadres:</label>
+                <input type="email" id="contactEmail" name="email" placeholder="je@email.com">
+            </div>
+            <div class="form-group">
+                <label for="subject">Onderwerp:</label>
+                <input type="text" id="subject" name="subject" placeholder="Waar gaat je bericht over?">
+            </div>
+            <div class="form-group">
+                <label for="message">Bericht:</label>
+                <textarea id="message" name="message" rows="4" placeholder="Typ hier je bericht..."></textarea>
+            </div>
+            <button type="submit">Verstuur Bericht</button>
+        </form>
+    </div>
+
+    <div id="dynamicForms"></div>
+
+    <script>
+        let formCounter = 0;
+
+        function addLoginForm() {
+            formCounter++;
+            const container = document.getElementById('dynamicForms');
+            const formHtml = `
+                <div class="form-container">
+                    <h2>🔐 Dynamisch Login Form ${formCounter}</h2>
+                    <form>
+                        <div class="form-group">
+                            <label>Username:</label>
+                            <input type="text" name="username" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" name="password" placeholder="Enter password">
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+            `;
+            container.innerHTML += formHtml;
+        }
+
+        function addRegistrationForm() {
+            formCounter++;
+            const container = document.getElementById('dynamicForms');
+            const formHtml = `
+                <div class="form-container">
+                    <h2>📝 Dynamisch Registratie Form ${formCounter}</h2>
+                    <form>
+                        <div class="form-group">
+                            <label>First Name:</label>
+                            <input type="text" name="firstname" placeholder="Your first name">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name:</label>
+                            <input type="text" name="lastname" placeholder="Your last name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address:</label>
+                            <input type="email" name="email" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input type="tel" name="phone" placeholder="+1 555 123 4567">
+                        </div>
+                        <div class="form-group">
+                            <label>Address:</label>
+                            <input type="text" name="address" placeholder="123 Main Street">
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" name="password" placeholder="Choose a password">
+                        </div>
+                        <button type="submit">Create Account</button>
+                    </form>
+                </div>
+            `;
+            container.innerHTML += formHtml;
+        }
+
+        function addContactForm() {
+            formCounter++;
+            const container = document.getElementById('dynamicForms');
+            const formHtml = `
+                <div class="form-container">
+                    <h2>📞 Dynamisch Contact Form ${formCounter}</h2>
+                    <form>
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" name="fullname" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" name="email" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Company:</label>
+                            <input type="text" name="company" placeholder="Your company">
+                        </div>
+                        <div class="form-group">
+                            <label>Message:</label>
+                            <textarea name="message" rows="3" placeholder="Your message here..."></textarea>
+                        </div>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </div>
+            `;
+            container.innerHTML += formHtml;
+        }
+
+        // Prevent actual form submission for testing
+        document.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Form submission prevented (this is a test page)');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Account Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 380px;
+            min-height: 580px;
+            max-height: 600px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 16px 20px 20px 20px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active { background-color: #4ade80; }
+        .status-inactive { background-color: #f87171; }
+        .status-standby { background-color: #fbbf24; }
+
+        .command-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 8px;
+            resize: none;
+        }
+
+        .command-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .command-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: rgba(76, 175, 80, 0.8);
+            border-color: rgba(76, 175, 80, 0.9);
+        }
+
+        .btn-primary:hover {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .settings-section {
+            margin-top: 16px;
+        }
+
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active {
+            background: rgba(76, 175, 80, 0.8);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(20px);
+        }
+
+        .detected-forms {
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .form-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 id="headerTitle">🤖 Smart Account Manager</h1>
+        <p id="headerSubtitle">Intelligente formulier-assistent</p>
+    </div>
+
+    <div class="content">
+        <!-- Status Card -->
+        <div class="status-card">
+            <div class="status-indicator">
+                <div class="status-dot status-standby" id="statusDot"></div>
+                <span id="statusText">Wacht op formulieren...</span>
+            </div>
+            <div id="detectedForms" class="detected-forms" style="display: none;">
+                <!-- Dynamisch ingevulde formulieren -->
+            </div>
+        </div>
+
+        <!-- Natuurlijke Taal Commando's -->
+        <div class="status-card">
+            <h3 style="margin-bottom: 10px; font-size: 14px;">🗣️ Natuurlijke Taal</h3>
+            <textarea 
+                class="command-input" 
+                id="commandInput" 
+                placeholder="Bijv: 'Vul mijn gegevens in op deze site' of 'Maak een account aan met mijn werk email'"
+                rows="2"
+            ></textarea>
+            <button class="btn btn-primary" id="executeCommand">Voer Commando Uit</button>
+        </div>
+
+        <!-- Quick Actions -->
+        <button class="btn" id="fillCurrentForm">📝 Vul Huidig Formulier</button>
+        <button class="btn" id="scanPage">🔍 Scan Pagina</button>
+
+        <!-- Instellingen -->
+        <div class="settings-section">
+            <div class="settings-item">
+                <span>Auto-detectie</span>
+                <div class="toggle active" id="autoDetectToggle"></div>
+            </div>
+            <div class="settings-item">
+                <span>Proactieve meldingen</span>
+                <div class="toggle active" id="notificationsToggle"></div>
+            </div>
+            <div class="settings-item">
+                <span>Leer van acties</span>
+                <div class="toggle active" id="learningToggle"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
