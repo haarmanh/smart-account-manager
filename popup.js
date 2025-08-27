@@ -327,20 +327,39 @@ class PopupManager {
     }
 
     async sendMessageToContent(type, data = {}) {
-        return new Promise((resolve, reject) => {
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                if (tabs[0]) {
-                    chrome.tabs.sendMessage(tabs[0].id, { type, ...data }, (response) => {
-                        if (chrome.runtime.lastError) {
-                            reject(chrome.runtime.lastError);
-                        } else {
-                            resolve(response);
-                        }
-                    });
-                } else {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+                if (!tabs[0]) {
                     reject(new Error('Geen actieve tab gevonden'));
+                    return;
                 }
-            });
+
+                const tab = tabs[0];
+
+                // Inject content script if not already present
+                try {
+                    await chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        files: ['content.js']
+                    });
+                    // Small delay to ensure content script is ready
+                    await new Promise(r => setTimeout(r, 100));
+                } catch (injectionError) {
+                    // Content script might already be injected, continue
+                    console.log('Content script injection note:', injectionError.message);
+                }
+
+                chrome.tabs.sendMessage(tab.id, { type, ...data }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve(response);
+                    }
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
