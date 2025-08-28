@@ -302,8 +302,13 @@ class PopupManager {
             const updatedSettings = { ...currentSettings.settings, ...newSettings };
             await chrome.storage.local.set({ settings: updatedSettings });
 
-            // Stuur update naar content script
-            await this.sendMessageToContent('UPDATE_SETTINGS', { settings: newSettings });
+            // Probeer update naar content script te sturen (optioneel)
+            try {
+                await this.sendMessageToContent('UPDATE_SETTINGS', { settings: newSettings });
+            } catch (contentError) {
+                // Content script niet beschikbaar, maar lokale opslag is wel bijgewerkt
+                console.log('Content script not available for settings update:', contentError.message);
+            }
 
             const settingNames = this.language === 'nl' ? {
                 'autoDetect': 'Auto-detectie',
@@ -322,7 +327,7 @@ class PopupManager {
             // Revert toggle op fout
             toggleElement.classList.toggle('active');
             this.showToast(this.messages.settingChangeFailed, 'error');
-            console.error('Setting toggle failed:', error);
+            console.error('Setting toggle failed:', error.message || error);
         }
     }
 
@@ -352,7 +357,7 @@ class PopupManager {
 
                 chrome.tabs.sendMessage(tab.id, { type, ...data }, (response) => {
                     if (chrome.runtime.lastError) {
-                        reject(chrome.runtime.lastError);
+                        reject(new Error(chrome.runtime.lastError.message));
                     } else {
                         resolve(response);
                     }
